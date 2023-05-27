@@ -10,9 +10,13 @@ st <- states()
 
 # Filter for Texas
 texas <- st |>
-  filter(NAME == "Texas")
+  filter(NAME == "Texas") |>
+  st_transform(crs = st_crs(data))
 
 # Check the map
 texas |>
   ggplot() + 
   geom_sf()
+
+# Perform an intersection operation on the data to restrict contours to the geographical boundaries of Texas.
+st_texas <- st_intersection(data, texas)

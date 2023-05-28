@@ -20,3 +20,6 @@ texas |>
 
 # Perform an intersection operation on the data to restrict contours to the geographical boundaries of Texas.
 st_texas <- st_intersection(data, texas)
+
+# Define aspect ratio based on bounding box
+bb <- st_bbox(st_texas)

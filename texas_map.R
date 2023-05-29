@@ -1,6 +1,8 @@
 library(sf)
 library(tigris)
 library(tidyverse)
+library(stars)
+library(rayshader)
 
 # Load in Kontur dataset
 data <- st_read("data/kontur_population_US_20220630.gpkg")
@@ -30,9 +32,45 @@ bottom_left <- st_point(c(bb[["xmin"]], bb[["ymin"]])) |>
 bottom_right <- st_point(c(bb[["xmax"]], bb[["ymin"]])) |>
   st_sfc(crs = st_crs(data))
 
+# Check points by plotting 
 texas |>
   ggplot() + 
   geom_sf() + 
   geom_sf(data = bottom_left) + 
   geom_sf(data = bottom_right, color = "blue")
 
+width <- st_distance(bottom_left, bottom_right)
+
+top_left <- st_point(c(bb[["xmin"]], bb[["ymax"]])) |>
+  st_sfc(crs = st_crs(data))
+
+height <- st_distance(bottom_left, top_left)
+
+# Handle conditions of width and height 
+if (width > height) {
+  w_ratio <- 1
+  h_ratio <- height / width
+} else {
+  h_ratio <- 1
+  w_ratio <- width / height
+}
+
+# Convert to raster to then convert to matrix
+size <- 1000
+texas_rast <- st_rasterize(st_texas,
+                           nx = floor(size * w_ratio),
+                           ny = floor(size * h_ratio))
+
+mat <- matrix(texas_rast$population,
+              nrow = floor(size * w_ratio),
+              ncol = floor(size * h_ratio))
+
+
+# Plot 3d object
+
+mat |>
+  height_shade() |>
+  plot_3d(heightmap = mat, 
+          zscale = 100,
+          solid = FALSE,
+          shadowdepth = 0)

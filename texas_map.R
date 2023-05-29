@@ -23,3 +23,16 @@ st_texas <- st_intersection(data, texas)
 
 # Define aspect ratio based on bounding box
 bb <- st_bbox(st_texas)
+
+bottom_left <- st_point(c(bb[["xmin"]], bb[["ymin"]])) |>
+  st_sfc(crs = st_crs(data))
+
+bottom_right <- st_point(c(bb[["xmax"]], bb[["ymin"]])) |>
+  st_sfc(crs = st_crs(data))
+
+texas |>
+  ggplot() + 
+  geom_sf() + 
+  geom_sf(data = bottom_left) + 
+  geom_sf(data = bottom_right, color = "blue")
+

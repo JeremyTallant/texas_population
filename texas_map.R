@@ -3,6 +3,8 @@ library(tigris)
 library(tidyverse)
 library(stars)
 library(rayshader)
+library(MetBrewer)
+library(colorspace)
 
 # Load in Kontur dataset
 data <- st_read("data/kontur_population_US_20220630.gpkg")
@@ -65,12 +67,20 @@ mat <- matrix(texas_rast$population,
               nrow = floor(size * w_ratio),
               ncol = floor(size * h_ratio))
 
+# Create color pallete 
+c1 <- met.brewer("OKeeffe2")
+swatchplot(c1)
+
+texture <- grDevices::colorRampPalette(c1, bias = 2)(256)
+swatchplot(texture)
 
 # Plot 3d object
 
 mat |>
-  height_shade() |>
+  height_shade(texture = texture) |>
   plot_3d(heightmap = mat, 
           zscale = 100,
           solid = FALSE,
           shadowdepth = 0)
+
+render_camera(theta = -20, phi = 45, zoom = .8)

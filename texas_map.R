@@ -58,7 +58,7 @@ if (width > height) {
 }
 
 # Convert to raster to then convert to matrix
-size <- 1000
+size <- 5000
 texas_rast <- st_rasterize(st_texas,
                            nx = floor(size * w_ratio),
                            ny = floor(size * h_ratio))
@@ -84,3 +84,11 @@ mat |>
           shadowdepth = 0)
 
 render_camera(theta = -20, phi = 45, zoom = .8)
+
+render_highquality(
+  filename = "images/test_plot.png",
+  interactive = FALSE,
+  lightaltitude = c(20, 80),
+  lightcolor = c(c1[2], "white"),
+  lightintensity = c(600, 100)
+)
